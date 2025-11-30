@@ -1,1 +1,93 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ route.title }}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>{{ route.title }}</h1>
+    </header>
 
+    <div class="top-actions" style="display:flex; gap:8px; margin-bottom:10px;">
+      <button id="add-stop" class="btn">Add Stop</button>
+      <button id="reset-route" class="btn reset">Reset Times & Delays</button>
+      <a href="/" class="btn" style="background:#6b7280">Back</a>
+    </div>
+
+    <form id="route-form">
+      <div class="timeline">
+
+        <!-- start icon -->
+        <div class="start-icon">
+          <!-- bus svg -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="2" y="4" width="20" height="12" rx="2" fill="white" stroke="url(#g)"/>
+            <circle cx="7.5" cy="18.5" r="1.4" fill="#111"/>
+            <circle cx="16.5" cy="18.5" r="1.4" fill="#111"/>
+            <defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+          </svg>
+        </div>
+
+        {% for stop in stops %}
+        <div class="stop-row" data-index="{{ loop.index0 }}">
+          <div class="time-left">
+            <strong>{{ stop.time }}</strong>
+            <div class="delay-inline">({{ "+" if stop.delay|int >= 0 else "" }}{{ stop.delay|int }} min)</div>
+          </div>
+
+          <div class="line-area"><div class="line-dot"></div></div>
+
+          <div class="right-card">
+            <div class="card-row">
+              <div>
+                <div class="stop-name">{{ stop.name }}</div>
+                <!-- Removed extra meta lines as requested -->
+              </div>
+
+              <div style="min-width:210px; text-align:right;">
+                <div style="display:flex; gap:8px; justify-content:flex-end; align-items:center;">
+                  <input class="field-name" type="text" data-field="name" value="{{ stop.name }}" style="width:180px; padding:6px; border-radius:6px; border:1px solid #e5e7eb;">
+                  <input class="field-time" type="time" data-field="time" value="{{ stop.time }}" style="padding:6px; border-radius:6px; border:1px solid #e5e7eb;">
+                  <input class="field-delay" type="number" data-field="delay" value="{{ stop.delay }}" style="width:68px; padding:6px; border-radius:6px; border:1px solid #e5e7eb;">
+                </div>
+
+                <div style="display:flex; gap:6px; justify-content:flex-end; margin-top:8px;">
+                  <button data-action="sub" type="button" class="small-btn">-1</button>
+                  <button data-action="add" type="button" class="small-btn">+1</button>
+                  <button data-action="delete" type="button" class="small-btn" style="background:#ef4444">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+        <div class="end-icon">
+          <!-- terminus -->
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <rect x="4" y="4" width="16" height="16" rx="3" fill="white" stroke="url(#g2)"/>
+            <defs><linearGradient id="g2" x1="0" x2="1"><stop offset="0" stop-color="#3b82f6"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+          </svg>
+        </div>
+
+      </div> <!-- timeline -->
+    </form>
+
+    <div style="margin-top:12px; color:#666; font-size:0.92rem;">Edits autosave (saved to <code>routes.json</code>)</div>
+
+  </div>
+
+  <script>
+    // route editor JS is in static/route.js
+  </script>
+  <script>
+    // Expose route id to the script
+    window.ROUTE_ID = "{{ route_id }}";
+  </script>
+  <script src="{{ url_for('static', filename='route.js') }}"></script>
+</body>
+</html>
